@@ -2650,3 +2650,23 @@ const outlineQuestions = [
         type: "multiple_choice"
     }))
 ];
+
+// Quiz data object
+const quizData = {
+    outline: {
+        title: "Outline Quiz",
+        questions: outlineQuestions
+    },
+    hosea: {
+        title: "Book of Hosea",
+        questions: hoseaQuestions
+    },
+    james: {
+        title: "Book of James",
+        questions: jamesQuestions
+    },
+    general: {
+        title: "General Bible Knowledge",
+        questions: generalQuestions
+    }
+};
