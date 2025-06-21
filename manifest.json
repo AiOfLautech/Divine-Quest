@@ -1,0 +1,21 @@
+{
+  "name": "Divine Quest Bible Quiz",
+  "short_name": "Bible Quiz",
+  "description": "Test your Bible knowledge with quizzes on Outline, Hosea, James, and General Bible knowledge",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#1a2a6c",
+  "background_color": "#1a2a6c",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
