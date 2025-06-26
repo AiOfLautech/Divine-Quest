@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✝️</text></svg>">
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
     <!-- Offline Banner -->
@@ -24,7 +25,7 @@
             <h1 class="logo-text">DIVINE QUEST</h1>
             <p class="logo-subtext">BIBLE QUIZ CHALLENGE</p>
         </div>
-        
+
         <div class="container quiz-container">
             <div class="row">
                 <div class="col-md-6 mb-4">
@@ -33,13 +34,13 @@
                             <h2 class="card-title"><i class="fas fa-book-open me-2"></i>Outline Quiz</h2>
                         </div>
                         <div class="card-body">
-                            <p>Test your knowledge based on the Bible study outlines. Questions derived from recent teachings and discussions.</p>
+                            <p>Test your knowledge based on the Bible study outlines.</p>
                             <div class="stats">
                                 <div class="stat-item">
-                                    <i class="fas fa-question-circle"></i> 100 Questions
+                                    <i class="fas fa-question-circle"></i> 50 Questions
                                 </div>
                                 <div class="stat-item">
-                                    <i class="fas fa-clock"></i> 45-60 min
+                                    <i class="fas fa-clock"></i> 30-45 min
                                 </div>
                             </div>
                             <button class="btn btn-quiz" onclick="showNameInput('outline')">
@@ -48,20 +49,20 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6 mb-4">
                     <div class="section-card">
                         <div class="card-header">
                             <h2 class="card-title"><i class="fas fa-dove me-2"></i>Hosea</h2>
                         </div>
                         <div class="card-body">
-                            <p>Dive deep into the Book of Hosea. Questions cover themes, key verses, and the prophetic message of this book.</p>
+                            <p>Dive deep into the Book of Hosea.</p>
                             <div class="stats">
                                 <div class="stat-item">
-                                    <i class="fas fa-question-circle"></i> 100 Questions
+                                    <i class="fas fa-question-circle"></i> 50 Questions
                                 </div>
                                 <div class="stat-item">
-                                    <i class="fas fa-clock"></i> 45-60 min
+                                    <i class="fas fa-clock"></i> 30-45 min
                                 </div>
                             </div>
                             <button class="btn btn-quiz" onclick="showNameInput('hosea')">
@@ -70,20 +71,20 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6 mb-4">
                     <div class="section-card">
                         <div class="card-header">
                             <h2 class="card-title"><i class="fas fa-feather-alt me-2"></i>James</h2>
                         </div>
                         <div class="card-body">
-                            <p>Explore the practical wisdom of the Book of James. Test your understanding of faith, works, and Christian living.</p>
+                            <p>Explore the practical wisdom of the Book of James.</p>
                             <div class="stats">
                                 <div class="stat-item">
-                                    <i class="fas fa-question-circle"></i> 100 Questions
+                                    <i class="fas fa-question-circle"></i> 50 Questions
                                 </div>
                                 <div class="stat-item">
-                                    <i class="fas fa-clock"></i> 45-60 min
+                                    <i class="fas fa-clock"></i> 30-45 min
                                 </div>
                             </div>
                             <button class="btn btn-quiz" onclick="showNameInput('james')">
@@ -92,20 +93,20 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6 mb-4">
                     <div class="section-card">
                         <div class="card-header">
                             <h2 class="card-title"><i class="fas fa-globe-americas me-2"></i>General Bible</h2>
                         </div>
                         <div class="card-body">
-                            <p>Comprehensive Bible knowledge test covering all 66 books. Includes "Who Am I?" questions and key biblical events.</p>
+                            <p>Comprehensive Bible knowledge test.</p>
                             <div class="stats">
                                 <div class="stat-item">
-                                    <i class="fas fa-question-circle"></i> 200 Questions
+                                    <i class="fas fa-question-circle"></i> 100 Questions
                                 </div>
                                 <div class="stat-item">
-                                    <i class="fas fa-clock"></i> 90-120 min
+                                    <i class="fas fa-clock"></i> 60-90 min
                                 </div>
                             </div>
                             <button class="btn btn-quiz" onclick="showNameInput('general')">
@@ -116,9 +117,9 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="footer">
-            <p>&copy; 2025 Divine Quest Bible Quiz | Created by Godwin Hephzibah Tech</p>
+            <p>© 2025 Divine Quest Bible Quiz | Created by Godwin Hephzibah Tech</p>
             <p>All Scripture quotations are from the Holy Bible</p>
         </div>
     </div>
@@ -151,28 +152,28 @@
             <h1 class="logo-text" id="quizTitle">QUIZ TITLE</h1>
             <p class="logo-subtext">Test Your Biblical Knowledge</p>
         </div>
-        
+
         <div class="container quiz-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <button class="btn btn-secondary" onclick="goHome()">
                     <i class="fas fa-arrow-left me-2"></i>Back to Home
                 </button>
-                <h3 id="quizProgress">Question 1 of 100</h3>
+                <h3 id="quizProgress">Question 1 of 50</h3>
             </div>
-            
+
             <div class="progress-container">
                 <div class="progress-bar" id="quizProgressBar" style="width: 1%"></div>
             </div>
-            
+
             <div class="quiz-question">
                 <div class="question-text" id="questionText">
                     Loading question...
                 </div>
-                
+
                 <div class="options-container" id="optionsContainer">
                     <!-- Options will be dynamically inserted here -->
                 </div>
-                
+
                 <div class="navigation-btns">
                     <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>
                         <i class="fas fa-arrow-left me-2"></i>Previous
@@ -208,13 +209,13 @@
                             <i class="fas fa-cross"></i>
                         </div>
                     </div>
-                    
+
                     <div class="mt-4 text-center">
                         <button class="btn btn-lg btn-success me-2" onclick="downloadCertificate()">
                             <i class="fas fa-download me-2"></i>Download Certificate
                         </button>
                         <button class="btn btn-lg btn-primary" onclick="downloadQuestions()">
-                            <i class="fas fa-file-download me-2"></i>Download Questions
+                            <i class="fas fa-file-download me-2"></i>Download Questions & Answers
                         </button>
                     </div>
                 </div>
