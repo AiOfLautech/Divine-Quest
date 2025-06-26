@@ -60,7 +60,7 @@ function startQuiz(quizType) {
     currentQuiz = quizData[quizType];
     currentQuestionIndex = 0;
     userAnswers = Array(currentQuiz.questions.length).fill(null);
-    
+
     // Load saved progress if exists
     const savedProgress = localStorage.getItem(`quizProgress_${quizType}`);
     if (savedProgress) {
@@ -69,12 +69,12 @@ function startQuiz(quizType) {
         userAnswers = progress.answers;
         userName = progress.userName || userName;
     }
-    
+
     quizTitle.textContent = currentQuiz.title;
     homeScreen.style.display = 'none';
     quizScreen.style.display = 'block';
     homeButton.style.display = 'block';
-    
+
     loadQuestion();
 }
 
@@ -83,7 +83,7 @@ function goHome() {
     homeScreen.style.display = 'block';
     quizScreen.style.display = 'none';
     homeButton.style.display = 'none';
-    
+
     // Save progress when leaving
     if (currentQuiz) {
         localStorage.setItem(`quizProgress_${quizType}`, JSON.stringify({
@@ -99,18 +99,18 @@ function loadQuestion() {
     const question = currentQuiz.questions[currentQuestionIndex];
     const totalQuestions = currentQuiz.questions.length;
     const progressPercent = ((currentQuestionIndex + 1) / totalQuestions) * 100;
-    
+
     quizProgress.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
     quizProgressBar.style.width = `${progressPercent}%`;
     questionText.textContent = question.question;
-    
+
     // Clear previous options
     optionsContainer.innerHTML = '';
-    
+
     // Update navigation buttons
     prevBtn.disabled = currentQuestionIndex === 0;
     nextBtn.textContent = currentQuestionIndex === totalQuestions - 1 ? 'Finish Quiz' : 'Next';
-    
+
     // Render options based on question type
     if (question.type === 'multiple_choice') {
         question.options.forEach((option, index) => {
@@ -129,7 +129,7 @@ function loadQuestion() {
                    value="${userAnswers[currentQuestionIndex] || ''}">
         `;
         optionsContainer.appendChild(inputGroup);
-        
+
         const textInput = inputGroup.querySelector('input');
         textInput.addEventListener('input', () => {
             userAnswers[currentQuestionIndex] = textInput.value.trim();
@@ -140,7 +140,7 @@ function loadQuestion() {
 // Select option for multiple choice
 function selectOption(index) {
     userAnswers[currentQuestionIndex] = index;
-    
+
     // Update UI
     const options = optionsContainer.querySelectorAll('.option');
     options.forEach((opt, i) => {
@@ -167,7 +167,7 @@ function nextQuestion() {
         alert('Please answer this question before proceeding.');
         return;
     }
-    
+
     if (currentQuestionIndex < currentQuiz.questions.length - 1) {
         currentQuestionIndex++;
         loadQuestion();
@@ -188,9 +188,9 @@ function finishQuiz() {
             if (userAnswer && userAnswer.toLowerCase() === question.answer.toLowerCase()) correctCount++;
         }
     });
-    
+
     const score = Math.round((correctCount / currentQuiz.questions.length) * 100);
-    
+
     // Set results for display
     quizResults = {
         quizName: currentQuiz.title,
@@ -199,17 +199,17 @@ function finishQuiz() {
         score: score,
         questions: currentQuiz.questions.map((q, i) => ({
             question: q.question,
-            userAnswer: userAnswers[i],
+            userAnswer: q.type === 'multiple_choice' ? (userAnswers[i] !== null ? q.options[userAnswers[i]] : 'Not answered') : (userAnswers[i] || 'Not answered'),
             correctAnswer: q.type === 'multiple_choice' ? q.options[q.answer] : q.answer,
             isCorrect: q.type === 'multiple_choice' ? 
                 (userAnswers[i] === q.answer) : 
                 (userAnswers[i] && userAnswers[i].toLowerCase() === q.answer.toLowerCase())
         }))
     };
-    
+
     // Clear saved progress
     localStorage.removeItem(`quizProgress_${quizType}`);
-    
+
     // Show results
     showResults();
 }
@@ -219,7 +219,7 @@ function showResults() {
     quizName.textContent = quizResults.quizName;
     userNameDisplay.textContent = userName;
     finalScore.textContent = `${quizResults.score}%`;
-    
+
     // Performance comment
     if (quizResults.score >= 90) {
         performanceComment.textContent = "Outstanding! Your knowledge of Scripture is exceptional.";
@@ -232,7 +232,7 @@ function showResults() {
     } else {
         performanceComment.textContent = "Continue your Bible study journey!";
     }
-    
+
     // Set certificate date
     const now = new Date();
     document.getElementById('certDate').textContent = now.toLocaleDateString('en-US', {
@@ -240,20 +240,89 @@ function showResults() {
         month: 'long',
         day: 'numeric'
     });
-    
+
     resultsModal.show();
 }
 
-// Download certificate
+// Download certificate as PDF
 function downloadCertificate() {
-    alert('Certificate downloaded!');
-    // In a real app, this would generate and download a PDF certificate
+    if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) {
+        alert('PDF generation is not available. Please ensure you are online to load the required library.');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Set font and size for certificate
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(24);
+    doc.text("Certificate of Achievement", 105, 20, { align: "center" });
+
+    doc.setFontSize(18);
+    doc.text("Divine Quest Bible Quiz", 105, 35, { align: "center" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(14);
+    doc.text("This certificate is awarded to:", 105, 50, { align: "center" });
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text(userName, 105, 65, { align: "center" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(14);
+    doc.text(`For successfully completing the ${quizResults.quizName}`, 105, 80, { align: "center" });
+
+    doc.text(`With a score of ${quizResults.score}%`, 105, 95, { align: "center" });
+
+    doc.text(performanceComment.textContent, 105, 110, { align: "center" });
+
+    doc.text(`Date: ${document.getElementById('certDate').textContent}`, 105, 125, { align: "center" });
+
+    // Add a seal or logo (placeholder)
+    doc.setFontSize(12);
+    doc.text("✝️", 105, 140, { align: "center" });
+
+    // Save the PDF
+    doc.save(`certificate_${quizType}_${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
-// Download questions
+// Download questions and answers as PDF
 function downloadQuestions() {
-    alert('Questions downloaded!');
-    // In a real app, this would generate a PDF with all questions and answers
+    if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) {
+        alert('PDF generation is not available. Please ensure you are online to load the required library.');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Quiz Questions and Answers", 105, 20, { align: "center" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+
+    let yPos = 30;
+    quizResults.questions.forEach((q, index) => {
+        doc.text(`Question ${index + 1}: ${q.question}`, 10, yPos);
+        yPos += 10;
+        doc.text(`Correct Answer: ${q.correctAnswer}`, 10, yPos);
+        yPos += 10;
+        doc.text(`Your Answer: ${q.userAnswer}`, 10, yPos);
+        yPos += 10;
+        doc.text(`Result: ${q.isCorrect ? 'Correct' : 'Incorrect'}`, 10, yPos);
+        yPos += 15;
+
+        if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+        }
+    });
+
+    doc.save(`questions_${quizType}_${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
 // Register service worker for PWA
