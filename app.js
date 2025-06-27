@@ -199,7 +199,7 @@ function finishQuiz() {
         score: score,
         questions: currentQuiz.questions.map((q, i) => ({
             question: q.question,
-            userAnswer: q.type === 'multiple_choice' ? (userAnswers[i] !== null ? q.options[userAnswers[i]] : 'Not answered') : (userAnswers[i] || 'Not answered'),
+            userAnswer: userAnswers[i],
             correctAnswer: q.type === 'multiple_choice' ? q.options[q.answer] : q.answer,
             isCorrect: q.type === 'multiple_choice' ? 
                 (userAnswers[i] === q.answer) : 
@@ -244,85 +244,47 @@ function showResults() {
     resultsModal.show();
 }
 
-// Download certificate as PDF
+// Download certificate as image
 function downloadCertificate() {
-    if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) {
-        alert('PDF generation is not available. Please ensure you are online to load the required library.');
-        return;
-    }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // Set font and size for certificate
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(24);
-    doc.text("Certificate of Achievement", 105, 20, { align: "center" });
-
-    doc.setFontSize(18);
-    doc.text("Divine Quest Bible Quiz", 105, 35, { align: "center" });
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(14);
-    doc.text("This certificate is awarded to:", 105, 50, { align: "center" });
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(20);
-    doc.text(userName, 105, 65, { align: "center" });
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(14);
-    doc.text(`For successfully completing the ${quizResults.quizName}`, 105, 80, { align: "center" });
-
-    doc.text(`With a score of ${quizResults.score}%`, 105, 95, { align: "center" });
-
-    doc.text(performanceComment.textContent, 105, 110, { align: "center" });
-
-    doc.text(`Date: ${document.getElementById('certDate').textContent}`, 105, 125, { align: "center" });
-
-    // Add a seal or logo (placeholder)
-    doc.setFontSize(12);
-    doc.text("✝️", 105, 140, { align: "center" });
-
-    // Save the PDF
-    doc.save(`certificate_${quizType}_${new Date().toISOString().split('T')[0]}.pdf`);
+    const certificateElement = document.querySelector('#resultsModal .certificate');
+    html2canvas(certificateElement, { scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `${userName}_certificate.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }).catch(error => {
+        console.error('Error generating certificate image:', error);
+        alert('Failed to download certificate. Please try again.');
+    });
 }
 
-// Download questions and answers as PDF
+// Download questions as PDF
 function downloadQuestions() {
-    if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) {
-        alert('PDF generation is not available. Please ensure you are online to load the required library.');
-        return;
-    }
-
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text("Quiz Questions and Answers", 105, 20, { align: "center" });
-
-    doc.setFont("helvetica", "normal");
+    doc.setFontSize(16);
+    doc.text(currentQuiz.title, 10, 10);
     doc.setFontSize(12);
 
-    let yPos = 30;
-    quizResults.questions.forEach((q, index) => {
-        doc.text(`Question ${index + 1}: ${q.question}`, 10, yPos);
-        yPos += 10;
-        doc.text(`Correct Answer: ${q.correctAnswer}`, 10, yPos);
-        yPos += 10;
-        doc.text(`Your Answer: ${q.userAnswer}`, 10, yPos);
-        yPos += 10;
-        doc.text(`Result: ${q.isCorrect ? 'Correct' : 'Incorrect'}`, 10, yPos);
-        yPos += 15;
+    let y = 20;
+    currentQuiz.questions.forEach((q, index) => {
+        const questionText = `${index + 1}. ${q.question}`;
+        const answerText = q.type === 'multiple_choice' ? 
+            `Answer: ${q.options[q.answer]}` : 
+            `Answer: ${q.answer}`;
 
-        if (yPos > 270) {
+        if (y > 270) {
             doc.addPage();
-            yPos = 20;
+            y = 10;
         }
+
+        doc.text(questionText, 10, y, { maxWidth: 180 });
+        y += 10;
+        doc.text(answerText, 10, y, { maxWidth: 180 });
+        y += 10;
     });
 
-    doc.save(`questions_${quizType}_${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`${currentQuiz.title}_questions.pdf`);
 }
 
 // Register service worker for PWA
